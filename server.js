@@ -1,10 +1,14 @@
 const express = require("express");
+const path = require("path");
+const helmet = require("helmet");
 
 const app = express();
 const port = 1337;
 
-app.use(express.static("public"));
-app.set("views", "./src/views");
+app.use(helmet());
+app.use(express.static(__dirname + "./public"));
+
+app.set("views", path.resolve(__dirname, "./src/views"));
 app.set("view engine", "pug");
 
 app.get("/", (req, res) => res.render("index"));

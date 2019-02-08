@@ -20,6 +20,7 @@
   "homepage": "https://github.com/zackcreach/zackcrea.ch#readme",
   "dependencies": {
     "express": "^4.16.4",
+    "helmet": "^3.15.0",
     "pug": "^2.0.3"
   },
   "prettier": {}
