@@ -6,7 +6,7 @@ const app = express();
 const port = 1337;
 
 app.use(helmet());
-app.use(express.static(__dirname + "./public"));
+app.use(express.static(path.resolve(__dirname, "./public")));
 
 app.set("views", path.resolve(__dirname, "./src/views"));
 app.set("view engine", "pug");
