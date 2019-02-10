@@ -1,11 +1,9 @@
 const express = require("express");
 const path = require("path");
-const helmet = require("helmet");
 
 const app = express();
 const port = 1337;
 
-app.use(helmet());
 app.use(express.static(path.resolve(__dirname, "./public")));
 
 app.set("views", path.resolve(__dirname, "./src/views"));
