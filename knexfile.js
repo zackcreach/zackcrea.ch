@@ -6,7 +6,7 @@ module.exports = {
     connection: process.env.PG_CONNECTION,
     pool: {
       min: 1,
-      max: 1
+      max: 10
     },
     migrations: {
       tableName: "knex_migrations"
@@ -14,10 +14,10 @@ module.exports = {
   },
   staging: {
     client: "pg",
-    connection: process.env.PGCONNECTION,
+    connection: process.env.PG_CONNECTION,
     pool: {
       min: 1,
-      max: 1
+      max: 10
     },
     migrations: {
       tableName: "knex_migrations"
@@ -25,10 +25,10 @@ module.exports = {
   },
   production: {
     client: "pg",
-    connection: process.env.PGCONNECTION,
+    connection: process.env.PG_CONNECTION,
     pool: {
       min: 1,
-      max: 1
+      max: 10
     },
     migrations: {
       tableName: "knex_migrations"
