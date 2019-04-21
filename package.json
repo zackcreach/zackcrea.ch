@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "run.env nodemon server.js",
+    "dev": "nodemon server.js",
     "start": "node server.js",
-    "db:migrate": "run.env knex migrate:latest"
+    "db:migrate": "knex migrate:latest"
   },
   "repository": {
     "type": "git",
@@ -29,9 +29,8 @@
     "pg": "^7.10.0",
     "pug": "^2.0.3"
   },
-  "prettier": {},
   "devDependencies": {
-    "nodemon": "^1.18.11",
-    "run.env": "^1.1.0"
-  }
+    "nodemon": "^1.18.11"
+  },
+  "prettier": {}
 }
