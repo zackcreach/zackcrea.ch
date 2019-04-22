@@ -4,6 +4,7 @@ const cors = require("cors");
 const { merge } = require("lodash");
 const { ApolloServer } = require("apollo-server-express");
 
+const router = require("./router");
 const loadTypes = require("./backend/utilities/loadTypes");
 const transaction = require("./backend/types/transaction/transaction.resolvers");
 
@@ -34,14 +35,7 @@ app.set("view engine", "pug");
 
 app.use(express.static(path.resolve(__dirname, "./public")));
 app.use(cors());
-
-app.get("/", (req, res) => {
-  res.render("index", { title: "Home" });
-});
-
-app.get("/balance", (req, res) => {
-  res.render("balance", { title: "Balance" });
-});
+app.use("/", router);
 
 app.listen(PORT, () => {
   console.log(`\nRoot:       http://0.0.0.0:${PORT}`);
