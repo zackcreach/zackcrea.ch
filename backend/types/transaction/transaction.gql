@@ -1,0 +1,27 @@
+type Transaction {
+  id: Int!
+  uuid: String!
+  source: String!
+  title: String!
+  user: String
+  category: String
+  reoccuring: Boolean
+  budget: Float
+  cost: Float!
+}
+
+type Query {
+  transactions: [Transaction]
+}
+
+type Mutation {
+  addTransaction(
+    source: String!
+    title: String!
+    user: String!
+    category: String
+    reoccuring: Boolean
+    budget: Float
+    cost: Float!
+  ): Int
+}
