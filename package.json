@@ -4,9 +4,12 @@
   "description": "Personal portfolio and dashboard",
   "main": "server.js",
   "scripts": {
-    "dev": "run-p start:**",
-    "start:frontend": "webpack-dev-server",
-    "start:backend": "nodemon server.js",
+    "dev": "run-p dev:**",
+    "dev:frontend": "webpack-dev-server",
+    "dev:backend": "nodemon server.js",
+    "prod": "run-s prod:frontend prod:backend",
+    "prod:frontend": "NODE_ENV=production webpack",
+    "prod:backend": "node server.js",
     "migrate": "knex migrate:latest"
   },
   "repository": {
