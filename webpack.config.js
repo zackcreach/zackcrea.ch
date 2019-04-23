@@ -59,6 +59,9 @@ module.exports = {
       filename: path.resolve(__dirname, "frontend/views/balance.pug"),
       template: path.resolve(__dirname, "frontend/views/balance.pug"),
       inject: true
+    }),
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
     })
   ],
   devServer: {

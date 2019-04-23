@@ -13,7 +13,7 @@ const HOST = process.env.HOST || "localhost";
 
 const app = express();
 
-const graphql = (async () => {
+(async () => {
   const tables = ["transaction"];
   const rootSchema = `
     schema {
@@ -33,7 +33,7 @@ const graphql = (async () => {
   });
 
   server.applyMiddleware({ app });
-  console.log(`Graphiql:   http://0.0.0.0:${PORT}${server.graphqlPath}`);
+  console.log(`Graphiql:   ${HOST}:${PORT}${server.graphqlPath}\n\n`);
 })();
 
 app.set("views", path.resolve(__dirname, "./frontend/views"));
@@ -44,5 +44,5 @@ app.use(cors());
 app.use("/", router);
 
 app.listen(PORT, () => {
-  console.log(`\nRoot:       http://0.0.0.0:${PORT}`);
+  console.log(`\nRoot:       ${HOST}:${PORT}`);
 });

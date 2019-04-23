@@ -10,14 +10,19 @@ module.exports = {
       password: process.env.PG_PASSWORD
     },
     migrations: {
-      tableName: "knex_migrations"
+      tableName: "knex_migrations",
+      directory: "./backend/migrations"
+    },
+    seeds: {
+      directory: "./backend/seeds"
     }
   },
   production: {
     client: "pg",
     connection: process.env.PG_CONNECTION,
     migrations: {
-      tableName: "knex_migrations"
+      tableName: "knex_migrations",
+      directory: "./backend/migrations"
     }
   }
 };

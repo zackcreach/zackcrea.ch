@@ -1,1 +1,3 @@
-@import "partials/_global.css"
+@import "partials/_global.css";
+@import "partials/_variables.css";
+@import "partials/_mixins.css";
