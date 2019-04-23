@@ -9,7 +9,7 @@
     "dev:backend": "nodemon server.js",
     "prod": "run-s prod:frontend prod:backend",
     "prod:frontend": "NODE_ENV=production webpack",
-    "prod:backend": "node server.js",
+    "prod:backend": "forever start --minUptime 1000 --spinSleepTime 1000 server.js",
     "migrate": "knex migrate:latest"
   },
   "repository": {
