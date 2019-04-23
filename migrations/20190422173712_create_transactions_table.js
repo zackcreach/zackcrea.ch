@@ -1,13 +1,18 @@
 exports.up = (knex, Promise) => {
   return Promise.all([
-    knex.raw('create extension if not exists "uuid-ossp"'),
     knex.schema.createTable("transactions", table => {
-      table.increments("id").primary();
-      table.string("uuid").defaultTo(knex.raw("uuid_generate_v4()"));
+      table
+        .uuid("id")
+        .notNullable()
+        .primary();
+      table.dateTime("created_at");
+      table.dateTime("modified_at");
       table.string("source");
+      table.string("merchant");
       table.string("user");
       table.string("title");
       table.string("category");
+      table.string("subcategory");
       table.boolean("reoccuring");
       table.float("budget", 10, 2);
       table.float("cost", 10, 2);
@@ -16,8 +21,5 @@ exports.up = (knex, Promise) => {
 };
 
 exports.down = (knex, Promise) => {
-  return Promise.all([
-    knex.raw('drop extension if exists "uuid-ossp"'),
-    knex.schema.dropTableIfExists("transactions")
-  ]);
+  return Promise.all([knex.schema.dropTableIfExists("transactions")]);
 };
