@@ -25,7 +25,13 @@ const graphql = (async () => {
   const typeDefs = [rootSchema, ...types];
   const resolvers = merge({}, transaction);
 
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    introspection: true,
+    playground: true
+  });
+
   server.applyMiddleware({ app });
   console.log(`Graphiql:   http://0.0.0.0:${PORT}${server.graphqlPath}`);
 })();
