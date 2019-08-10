@@ -6,23 +6,36 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const postcssImport = require("postcss-import");
 const postcssPresetEnv = require("postcss-preset-env");
 const postcssNano = require("cssnano");
-const { VueLoaderPlugin } = require("vue-loader");
 
 module.exports = {
   mode: process.env.NODE_ENV,
   entry: {
-    balance: path.resolve(__dirname, "frontend/scripts/balance.js")
+    home: path.resolve(__dirname, "frontend/scripts/home"),
+    balance: path.resolve(__dirname, "frontend/scripts/balance")
   },
   output: {
     path: path.resolve(__dirname, "public/js"),
     publicPath: "/js/",
     filename: "[name].js"
   },
+  resolve: {
+    // see below for an explanation
+    alias: {
+      svelte: path.resolve("node_modules", "svelte")
+    },
+    extensions: [".mjs", ".js", ".svelte"],
+    mainFields: ["svelte", "browser", "module", "main"]
+  },
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        use: "vue-loader"
+        test: /\.svelte$/,
+        use: {
+          loader: "svelte-loader",
+          options: {
+            hotReload: true
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -53,13 +66,11 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new VueLoaderPlugin(),
-    new HtmlWebpackPlugin({
-      filename: path.resolve(__dirname, "frontend/views/balance.pug"),
-      template: path.resolve(__dirname, "frontend/views/balance.pug"),
-      inject: true
-    }),
+    // new HtmlWebpackPlugin({
+    //   filename: path.resolve(__dirname, "frontend/views/balance.pug"),
+    //   template: path.resolve(__dirname, "frontend/views/balance.pug"),
+    //   inject: true
+    // }),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
     })

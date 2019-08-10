@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
-const { merge } = require("lodash");
+const { merge } = require("lodash/merge");
 const { ApolloServer } = require("apollo-server-express");
 
 const router = require("./router");
