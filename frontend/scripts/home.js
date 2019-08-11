@@ -1,9 +1,10 @@
-import Home from "./Home.svelte";
+import Home from "./home.svelte";
+import "../styles/home.css";
 
 const home = new Home({
   target: document.body,
   props: {
-    name: "world"
+    name: "f"
   }
 });
 

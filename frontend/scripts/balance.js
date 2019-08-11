@@ -1,4 +1,5 @@
-import Balance from "./Balance.svelte";
+import Balance from "./balance.svelte";
+import "../styles/balance.css";
 
 const balance = new Balance({
   target: document.body,

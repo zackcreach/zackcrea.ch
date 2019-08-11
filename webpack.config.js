@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const path = require("path");
 const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const postcssImport = require("postcss-import");
 const postcssPresetEnv = require("postcss-preset-env");
 const postcssNano = require("cssnano");
@@ -10,21 +9,20 @@ const postcssNano = require("cssnano");
 module.exports = {
   mode: process.env.NODE_ENV,
   entry: {
-    home: path.resolve(__dirname, "frontend/scripts/home"),
-    balance: path.resolve(__dirname, "frontend/scripts/balance")
-  },
-  output: {
-    path: path.resolve(__dirname, "public/js"),
-    publicPath: "/js/",
-    filename: "[name].js"
+    home: path.resolve(__dirname, "frontend/scripts/home.js"),
+    balance: path.resolve(__dirname, "frontend/scripts/balance.js")
   },
   resolve: {
-    // see below for an explanation
     alias: {
       svelte: path.resolve("node_modules", "svelte")
     },
     extensions: [".mjs", ".js", ".svelte"],
     mainFields: ["svelte", "browser", "module", "main"]
+  },
+  output: {
+    path: path.resolve(__dirname, "public/js"),
+    publicPath: "/js/",
+    filename: "[name].js"
   },
   module: {
     rules: [
@@ -66,11 +64,6 @@ module.exports = {
     ]
   },
   plugins: [
-    // new HtmlWebpackPlugin({
-    //   filename: path.resolve(__dirname, "frontend/views/balance.pug"),
-    //   template: path.resolve(__dirname, "frontend/views/balance.pug"),
-    //   inject: true
-    // }),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
     })
@@ -81,10 +74,8 @@ module.exports = {
     },
     port: 1338,
     host: "0.0.0.0",
-    compress: true,
-    progress: true,
-    hot: true,
     open: true,
+    hot: true,
     noInfo: false,
     clientLogLevel: "error",
     overlay: { errors: true }
