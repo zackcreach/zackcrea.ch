@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
-const { merge } = require("lodash");
+const merge = require("lodash/merge");
 const { ApolloServer } = require("apollo-server-express");
 
 const router = require("./router");
@@ -33,7 +33,7 @@ const app = express();
   });
 
   server.applyMiddleware({ app });
-  console.log(`Graphiql:   ${HOST}:${PORT}${server.graphqlPath}\n\n`);
+  console.log(`Graphiql:   http://${HOST}:${PORT}${server.graphqlPath}\n\n`);
 })();
 
 app.set("views", path.resolve(__dirname, "./frontend/views"));
@@ -44,5 +44,5 @@ app.use(cors());
 app.use("/", router);
 
 app.listen(PORT, () => {
-  console.log(`\nRoot:       ${HOST}:${PORT}`);
+  console.log(`\nRoot:       http://${HOST}:${PORT}`);
 });
