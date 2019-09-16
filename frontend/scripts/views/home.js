@@ -5,7 +5,7 @@ import "../components/background";
 const weddingDate = new Date("11/2/2019").getTime();
 const nowDate = Date.now();
 const timeDifference = nowDate - weddingDate;
-const status = timeDifference > 0 ? "engaged" : "married";
+const status = timeDifference > 0 ? "married" : "engaged";
 
 const home = new Home({
   target: document.body,
