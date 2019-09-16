@@ -1,6 +1,5 @@
 import Home from "./home.svelte";
 import "../../styles/home.css";
-import "../components/background";
 
 const weddingDate = new Date("11/2/2019").getTime();
 const nowDate = Date.now();

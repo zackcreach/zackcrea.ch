@@ -18,7 +18,7 @@
     <a
       href="https://www.flickr.com/photos/zackcreach"
       class="no-underline dib f4 f4-m fw2 mb3">
-      I shoot on film.
+      I shoot film.
     </a>
   </div>
 </main>

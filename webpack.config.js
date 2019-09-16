@@ -10,7 +10,11 @@ module.exports = {
   mode: process.env.NODE_ENV,
   entry: {
     home: path.resolve(__dirname, "frontend/scripts/views/home.js"),
-    balance: path.resolve(__dirname, "frontend/scripts/views/balance.js")
+    balance: path.resolve(__dirname, "frontend/scripts/views/balance.js"),
+    background: path.resolve(
+      __dirname,
+      "frontend/scripts/components/background.js"
+    )
   },
   resolve: {
     alias: {
