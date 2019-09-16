@@ -9,8 +9,8 @@ const postcssNano = require("cssnano");
 module.exports = {
   mode: process.env.NODE_ENV,
   entry: {
-    home: path.resolve(__dirname, "frontend/scripts/home.js"),
-    balance: path.resolve(__dirname, "frontend/scripts/balance.js")
+    home: path.resolve(__dirname, "frontend/scripts/views/home.js"),
+    balance: path.resolve(__dirname, "frontend/scripts/views/balance.js")
   },
   resolve: {
     alias: {
