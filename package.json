@@ -40,7 +40,7 @@
     "pg": "^7.12.1",
     "postcss-preset-env": "^6.7.0",
     "pug": "^2.0.4",
-    "three": "^0.108.0"
+    "three": "^0.125.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
