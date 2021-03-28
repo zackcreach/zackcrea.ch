@@ -12,13 +12,13 @@ const settings = {
   // Get a WebGL canvas rather than 2D
   context: "webgl",
   // Turn on MSAA
-  attributes: { antialias: true }
+  attributes: { antialias: true },
 };
 
 const sketch = ({ context }) => {
   // Create a renderer
   const renderer = new THREE.WebGLRenderer({
-    context
+    context,
   });
 
   // WebGL background color
@@ -37,7 +37,7 @@ const sketch = ({ context }) => {
 
   for (let index = -500; index < 500; index++) {
     const material = new THREE.LineBasicMaterial({
-      color: `hsl(${index * 10}, 100%, 100%)`
+      color: `hsl(${index * 10}, 100%, 100%)`,
     });
     const geometry = new THREE.Geometry();
     geometry.vertices.push(new THREE.Vector3(-10000, 0, index * 3));
@@ -74,7 +74,7 @@ const sketch = ({ context }) => {
     unload() {
       controls.dispose();
       renderer.dispose();
-    }
+    },
   };
 };
 
