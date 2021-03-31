@@ -1,12 +1,13 @@
 import { ApolloServer } from "apollo-server-micro";
 import { schema } from "../../../apollo/schema";
-import db from "../../../lib/database";
+import { client } from "../../../lib/database";
+
+client.connect();
 
 const apolloServer = new ApolloServer({
-  db,
   schema,
   context(ctx) {
-    return ctx;
+    return { ...ctx, client };
   },
 });
 

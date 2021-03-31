@@ -5,15 +5,12 @@ import { removeTokenCookie } from "../lib/auth-cookies.js";
 
 export const resolvers = {
   Query: {
-    hello(_parent, _args, _context, _info) {
-      return "Hello!";
-    },
     async viewer(_parent, _args, context, _info) {
       try {
         const session = await getLoginSession(context.req);
 
         if (session) {
-          return findUser({ email: session.email });
+          return findUser({ email: session.email }, context.client);
         }
       } catch (error) {
         throw new AuthenticationError(
@@ -23,13 +20,12 @@ export const resolvers = {
     },
   },
   Mutation: {
-    async signUp(_parent, args, _context, _info) {
-      const user = await createUser(args.input);
+    async signUp(_parent, args, context, _info) {
+      const user = await createUser(args.input, context.client);
       return { user };
     },
     async signIn(_parent, args, context, _info) {
-      console.log(arguments);
-      const user = await findUser({ email: args.input.email });
+      const user = await findUser({ email: args.input.email }, context.client);
 
       if (user && (await validatePassword(user, args.input.password))) {
         const session = {
