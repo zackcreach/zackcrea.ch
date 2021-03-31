@@ -36,9 +36,7 @@ const sketch = ({ context }) => {
   const scene = new THREE.Scene();
 
   for (let index = -500; index < 500; index++) {
-    const material = new THREE.LineBasicMaterial({
-      color: `hsl(${index * 10}, 100%, 100%)`,
-    });
+    const material = new THREE.LineBasicMaterial();
     const geometry = new THREE.Geometry();
     geometry.vertices.push(new THREE.Vector3(-10000, 0, index * 3));
     geometry.vertices.push(new THREE.Vector3(10000, 0, index * 3));

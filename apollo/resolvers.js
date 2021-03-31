@@ -10,7 +10,7 @@ export const resolvers = {
         const session = await getLoginSession(context.req);
 
         if (session) {
-          return findUser({ email: session.email }, context.client);
+          return findUser({ email: session.email }, context.db);
         }
       } catch (error) {
         throw new AuthenticationError(
@@ -18,14 +18,23 @@ export const resolvers = {
         );
       }
     },
+    async getGifList(_parent, _args, context, _info) {
+      try {
+        return getGifList(context.db);
+      } catch (error) {
+        throw new Error(
+          `Error: gifs could not be retrieved. Details: ${error}`
+        );
+      }
+    },
   },
   Mutation: {
     async signUp(_parent, args, context, _info) {
-      const user = await createUser(args.input, context.client);
+      const user = await createUser(args.input, context.db);
       return { user };
     },
     async signIn(_parent, args, context, _info) {
-      const user = await findUser({ email: args.input.email }, context.client);
+      const user = await findUser({ email: args.input.email }, context.db);
 
       if (user && (await validatePassword(user, args.input.password))) {
         const session = {
