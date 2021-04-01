@@ -15,10 +15,13 @@
     "cookie": "^0.4.1",
     "deepmerge": "^4.2.2",
     "graphql": "^15.5.0",
+    "grommet": "^2.17.1",
+    "grommet-icons": "^4.5.0",
     "next": "10.0.9",
     "pg": "^8.5.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "styled-components": "^5.2.3",
     "three": "0.108.0",
     "uuid": "^8.3.2"
   },

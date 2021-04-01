@@ -10,6 +10,7 @@ export const typeDefs = gql`
   }
   type Gif {
     id: ID!
+    name: String!
     url: String!
     tags: [String]!
     created_ts: String!
@@ -35,17 +36,22 @@ export const typeDefs = gql`
   type SignInPayload {
     user: User!
   }
+  type AddGifPayload {
+    gif: Gif!
+  }
 
   type Query {
     user(id: ID!): User!
     users: [User]!
     viewer: User
-    getGifList: Gif
+    gifs: [Gif]
+    gif(id: ID!): Gif!
   }
 
   type Mutation {
     signUp(input: SignUpInput!): SignUpPayload!
     signIn(input: SignInInput!): SignInPayload!
     signOut: Boolean!
+    addGif(id: ID!): AddGifPayload!
   }
 `;

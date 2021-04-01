@@ -18,13 +18,24 @@ export const resolvers = {
         );
       }
     },
-    async getGifList(_parent, _args, context, _info) {
+    async gifs(_parent, _args, context, _info) {
       try {
-        return getGifList(context.db);
+        const result = await getGifList(context.db);
+
+        return { result };
       } catch (error) {
         throw new Error(
           `Error: gifs could not be retrieved. Details: ${error}`
         );
+      }
+    },
+    async gif(_parent, args, context, _info) {
+      try {
+        const result = await getGif(args.id, context.db);
+
+        return { result };
+      } catch (error) {
+        throw new Error(`Error: gif could not be retrieved. Details: ${error}`);
       }
     },
   },
@@ -52,6 +63,10 @@ export const resolvers = {
     async signOut(_parent, _args, context, _info) {
       removeTokenCookie(context.res);
       return true;
+    },
+    async addGif(_parent, args, context, _info) {
+      const result = await createGif(args.id, context.db);
+      return { result };
     },
   },
 };
