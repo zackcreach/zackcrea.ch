@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloLink } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 import merge from "deepmerge";
 
 let apolloClient;
@@ -11,10 +12,13 @@ function createIsomorphLink() {
     return new SchemaLink({ schema });
   } else {
     const { HttpLink } = require("@apollo/client/link/http");
-    return new HttpLink({
+    const uploadLink = createUploadLink({ uri: "http://localhost:1338" });
+    const httpLink = new HttpLink({
       uri: "/api/graphql",
       credentials: "same-origin",
     });
+
+    return ApolloLink.from([httpLink, uploadLink]);
   }
 }
 

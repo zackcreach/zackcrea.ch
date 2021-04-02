@@ -1,9 +1,12 @@
 import { AuthenticationError, UserInputError } from "apollo-server-micro";
+import { GraphQLUpload } from "graphql-upload";
 import { createUser, findUser, validatePassword } from "../lib/user";
 import { setLoginSession, getLoginSession } from "../lib/auth";
+import { uploadImage } from "../lib/file-uploader";
 import { removeTokenCookie } from "../lib/auth-cookies.js";
 
 export const resolvers = {
+  FileUpload: GraphQLUpload,
   Query: {
     async viewer(_parent, _args, context, _info) {
       try {
@@ -64,9 +67,14 @@ export const resolvers = {
       removeTokenCookie(context.res);
       return true;
     },
+    async uploadFile(_parent, args, _context, _info) {
+      console.log({ args });
+      const file = await uploadImage(args.file);
+      return { file };
+    },
     async addGif(_parent, args, context, _info) {
-      const result = await createGif(args.id, context.db);
-      return { result };
+      const gif = await createGif(args.input, context.db);
+      return { gif };
     },
   },
 };

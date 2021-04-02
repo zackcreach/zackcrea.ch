@@ -1,6 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const typeDefs = gql`
+  scalar FileUpload
+
   type User {
     id: ID!
     email: String!
@@ -8,11 +10,16 @@ export const typeDefs = gql`
     hash: String!
     salt: String!
   }
+  type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+  }
   type Gif {
     id: ID!
     name: String!
     url: String!
-    tags: [String]!
+    tags: [String]
     created_ts: String!
     updated_ts: String!
   }
@@ -30,11 +37,20 @@ export const typeDefs = gql`
     email: String!
     password: String!
   }
+  input AddGifInput {
+    name: String!
+    url: String!
+    tags: [String]
+  }
+
   type SignUpPayload {
     user: User!
   }
   type SignInPayload {
     user: User!
+  }
+  type AddFilePayload {
+    file: File!
   }
   type AddGifPayload {
     gif: Gif!
@@ -44,7 +60,7 @@ export const typeDefs = gql`
     user(id: ID!): User!
     users: [User]!
     viewer: User
-    gifs: [Gif]
+    gifs: [Gif]!
     gif(id: ID!): Gif!
   }
 
@@ -52,6 +68,7 @@ export const typeDefs = gql`
     signUp(input: SignUpInput!): SignUpPayload!
     signIn(input: SignInInput!): SignInPayload!
     signOut: Boolean!
-    addGif(id: ID!): AddGifPayload!
+    uploadFile(file: FileUpload!): File!
+    addGif(input: AddGifInput!): AddGifPayload!
   }
 `;
