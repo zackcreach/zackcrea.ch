@@ -5,27 +5,24 @@ import { Box, FileInput } from "grommet";
 
 export default function Home() {
   const [url, setUrl] = useState(null);
-  const [uploadFile] = useMutation(UploadFileMutation);
 
   useEffect(() => console.log(url), [url]);
 
   async function handleChange(event) {
-    const fileList = event.target.files;
+    const file = event.target.files[0];
 
-    for (let index = 0; index < fileList.length; index += 1) {
-      const file = fileList[index];
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-      try {
-        const fileUrl = await uploadFile({
-          variables: {
-            file,
-          },
-        });
+      const result = await fetch("/api/upload/image", {
+        method: "POST",
+        body: formData,
+      });
 
-        setUrl(fileUrl);
-      } catch (error) {
-        console.log(error);
-      }
+      setUrl(result);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -46,13 +43,3 @@ export default function Home() {
     </>
   );
 }
-
-const UploadFileMutation = gql`
-  mutation UploadFileMutation($file: FileUpload!) {
-    uploadFile(file: $file) {
-      filename
-      mimetype
-      encoding
-    }
-  }
-`;
