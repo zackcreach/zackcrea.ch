@@ -68,7 +68,6 @@ export const resolvers = {
       return true;
     },
     async uploadFile(_parent, args, _context, _info) {
-      console.log({ args });
       const file = await uploadImage(args.file);
       return { file };
     },

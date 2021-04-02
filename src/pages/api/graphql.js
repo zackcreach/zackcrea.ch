@@ -9,7 +9,6 @@ const apolloServer = new ApolloServer({
   context(ctx) {
     return { ...ctx, db };
   },
-  uploads: false,
 });
 
 export const config = {

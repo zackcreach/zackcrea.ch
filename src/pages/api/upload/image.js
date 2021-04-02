@@ -9,9 +9,9 @@ export default nextConnect()
   .use(upload.single("file"))
   .post(async (req, res) => {
     try {
-      const url = await uploadImage(req.file);
+      const data = await uploadImage(req.file);
 
-      res.status(200).json({ data: { url } });
+      res.status(200).json({ data });
     } catch (error) {
       res
         .status(500)
