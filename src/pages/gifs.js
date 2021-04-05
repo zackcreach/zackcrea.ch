@@ -13,40 +13,33 @@ import {
   Select,
   Spinner,
   Image,
+  Text,
 } from "grommet";
 import { Close } from "grommet-icons";
+import { getErrorMessage } from "../../lib/form";
 
 export default function Home() {
-  const defaultValues = {
-    name: "",
+  const defaultValue = {
+    file: {},
     url: "",
+    name: "",
     tags: [],
   };
 
-  const prefix = "Create new tag";
-  const defaultOptions = ["excellent"];
+  const defaultOptions = [];
+  const newTagPrefix = "Create new tag";
 
   const [tagOptions, setTagOptions] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
-  const [url, setUrl] = useState(defaultValues.url);
-  const [name, setName] = useState(defaultValues.name);
-  const [tags, setTags] = useState([]);
-
+  const [error, setError] = useState({});
+  const [value, setValue] = useState(defaultValue);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  function handleClickClose() {
-    setIsModalOpen(false);
-  }
+  const [addGif] = useMutation(AddGifMutation);
 
-  function handleClickOpen() {
-    setIsModalOpen(true);
-  }
-
-  async function handleChangeName(event) {
-    const value = event.target.value;
-    setName(value);
+  function handleClickLayer() {
+    setIsModalOpen((prevState) => !prevState);
   }
 
   async function handleChangeFile(event) {
@@ -64,47 +57,67 @@ export default function Home() {
 
       const { data } = await response.json();
 
-      setUrl(data.Location);
-      setName((prevState) => prevState || data.Key.replace(/\.\w+/, ""));
+      const url = data.Location;
+      const name = value.name || data.Key.replace(/\.\w+/, "");
+      handleChange({ ...value, url, name });
     } catch (error) {
-      console.log(error);
+      setError({ message: getErrorMessage(error) });
     } finally {
       setIsLoading(false);
     }
   }
 
   async function handleSubmit(event) {
-    console.log("Submit", event);
+    event.preventDefault();
+
+    setIsLoading(true);
+
+    try {
+      const { name, url, tags } = event.value;
+
+      await addGif({
+        variables: {
+          name,
+          url,
+          tags,
+        },
+      });
+    } catch (error) {
+      setError({ message: getErrorMessage(error) });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  function handleClickTag(event) {
+  function handleReset() {
+    handleChange(defaultValue);
+  }
+
+  function handleChange(nextValue) {
+    setValue(nextValue);
+  }
+
+  function handleClickRemoveTag(event) {
     const name = event.currentTarget.name;
-    setTags((prevState) => prevState.filter((tag) => tag !== name));
+    const tags = value.tags.filter((tag) => tag !== name);
+    const nextValue = { ...value, tags };
+    handleChange(nextValue);
   }
 
-  function handleChangeSelect(event) {
+  function handleChangeSelectTag(event) {
     const option = event.option;
+    let tags = [];
 
-    if (option.includes(prefix)) {
+    if (option.includes(newTagPrefix)) {
       defaultOptions.pop();
       defaultOptions.push(searchValue);
-      setTags((prevState) => [...prevState, searchValue]);
+      tags = [...value.tags, searchValue];
     } else {
-      setTags((prevState) => [...prevState, option]);
+      tags = [...value.tags, option];
     }
-  }
 
-  function updateCreateOption(text) {
-    const length = defaultOptions.length;
-    if (defaultOptions[length - 1].includes(prefix)) {
-      defaultOptions.pop();
-    }
-    defaultOptions.push(`${prefix} '${text}'`);
-  }
-
-  function getRegExp(text) {
-    const escapedText = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-    return new RegExp(escapedText, "i");
+    const nextValue = { ...value, tags };
+    handleChange(nextValue);
   }
 
   return (
@@ -115,12 +128,12 @@ export default function Home() {
       </Head>
 
       <main>
-        <Button label="Yes" onClick={handleClickOpen} />
+        <Button label="Yes" onClick={handleClickLayer} />
 
         {isModalOpen && (
           <Layer
-            onClickOutside={handleClickClose}
-            onEsc={handleClickClose}
+            onClickOutside={handleClickLayer}
+            onEsc={handleClickLayer}
             modal
           >
             <Box pad="large" gap="medium" width="medium">
@@ -129,34 +142,55 @@ export default function Home() {
                 {isLoading && <Spinner />}
               </Box>
 
-              <Form onSubmit={handleSubmit}>
-                <Box pad={url && { bottom: "medium" }}>
-                  <Image src={url} />
+              <Form
+                value={value}
+                onSubmit={handleSubmit}
+                onChange={handleChange}
+                onReset={handleReset}
+              >
+                <Box pad={value.url && { bottom: "medium" }}>
+                  <Image src={value.url} />
                 </Box>
 
                 <Box pad={{ bottom: "medium" }}>
-                  <FileInput onChange={handleChangeFile} disabled={isLoading} />
+                  <FileInput
+                    onChange={handleChangeFile}
+                    disabled={isLoading}
+                    renderFile={(file) => (
+                      <Box direction="row" gap="small" pad={{ left: "medium" }}>
+                        <Text weight="bold">{file.name}</Text>
+                        <Text color="text-weak">
+                          {Math.round(file.size / 100)}kb
+                        </Text>
+                      </Box>
+                    )}
+                  />
                 </Box>
 
-                <FormField label="Name">
-                  <TextInput value={name} onChange={handleChangeName} />
+                <FormField name="name" htmlFor="name-input-id" label="Name">
+                  <TextInput htmlFor="name-input-id" name="name" />
                 </FormField>
 
                 <Box pad={{ bottom: "small" }}>
-                  <FormField label="Tags">
+                  <FormField name="tags" htmlFor="tags-input-id" label="Tags">
                     <Box
                       direction="row"
-                      pad={tags.length && { bottom: "xsmall", top: "xsmall" }}
+                      pad={
+                        value.tags?.length
+                          ? { bottom: "xsmall", top: "xsmall" }
+                          : {}
+                      }
+                      wrap
                     >
-                      {tags.map((tag) => (
-                        <Box pad={{ right: "xsmall" }}>
+                      {value.tags?.map((tag) => (
+                        <Box pad={{ right: "xsmall", bottom: "xsmall" }}>
                           <Button
                             size="small"
                             name={tag}
                             type="button"
                             label={tag}
                             icon={<Close size="small" />}
-                            onClick={handleClickTag}
+                            onClick={handleClickRemoveTag}
                             reverse
                           />
                         </Box>
@@ -164,12 +198,14 @@ export default function Home() {
                     </Box>
 
                     <Select
+                      name="tags"
+                      id="tags-input-id"
                       options={tagOptions}
-                      onChange={handleChangeSelect}
+                      onChange={handleChangeSelectTag}
                       onClose={() => setTagOptions(defaultOptions)}
                       onSearch={(text) => {
-                        updateCreateOption(text);
-                        const regex = getRegExp(text);
+                        _updateCreateOption(text, defaultOptions, newTagPrefix);
+                        const regex = _getRegExp(text);
                         setTagOptions(
                           defaultOptions.filter((option) => regex.test(option))
                         );
@@ -179,12 +215,22 @@ export default function Home() {
                   </FormField>
                 </Box>
 
-                <Button
-                  type="submit"
-                  label="Submit"
-                  disabled={isLoading}
-                  primary
-                />
+                {error.message && (
+                  <Box pad={{ bottom: "medium", top: "medium" }}>
+                    <Text color="status-error">{error.message}</Text>
+                  </Box>
+                )}
+
+                <Box direction="row" gap="xsmall">
+                  <Button
+                    type="submit"
+                    label="Submit"
+                    disabled={isLoading}
+                    primary
+                  />
+
+                  <Button type="reset" label="Reset" disabled={isLoading} />
+                </Box>
               </Form>
             </Box>
           </Layer>
@@ -192,4 +238,32 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+const AddGifMutation = gql`
+  mutation AddGifMutation($name: String!, $url: String!, $tags: [String]) {
+    addGif(input: { name: $name, url: $url, tags: $tags }) {
+      gif {
+        id
+        name
+        url
+        tags
+        created_ts
+        updated_ts
+      }
+    }
+  }
+`;
+
+function _updateCreateOption(text, defaultOptions, prefix) {
+  const length = defaultOptions.length;
+  if ((defaultOptions[length - 1] || "").includes(prefix)) {
+    defaultOptions.pop();
+  }
+  defaultOptions.push(`${prefix} '${text}'`);
+}
+
+function _getRegExp(text) {
+  const escapedText = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
+  return new RegExp(escapedText, "i");
 }

@@ -1,6 +1,7 @@
 import { AuthenticationError, UserInputError } from "apollo-server-micro";
 import { GraphQLUpload } from "graphql-upload";
 import { createUser, findUser, validatePassword } from "../lib/user";
+import { getGifList, getGif, createGif } from "../lib/gifs";
 import { setLoginSession, getLoginSession } from "../lib/auth";
 import { uploadImage } from "../lib/file-uploader";
 import { removeTokenCookie } from "../lib/auth-cookies.js";

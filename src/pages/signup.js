@@ -5,20 +5,9 @@ import { gql, useMutation } from "@apollo/client";
 import { getErrorMessage } from "../../lib/form";
 import Field from "../components/field";
 
-const SignUpMutation = gql`
-  mutation SignUpMutation($email: String!, $password: String!) {
-    signUp(input: { email: $email, password: $password }) {
-      user {
-        id
-        email
-      }
-    }
-  }
-`;
-
 function SignUp() {
   const [signUp] = useMutation(SignUpMutation);
-  const [errorMsg, setErrorMsg] = useState();
+  const [error, setError] = useState();
   const router = useRouter();
 
   async function handleSubmit(event) {
@@ -36,7 +25,7 @@ function SignUp() {
 
       router.push("/signin");
     } catch (error) {
-      setErrorMsg(getErrorMessage(error));
+      setError(getErrorMessage(error));
     }
   }
 
@@ -44,7 +33,7 @@ function SignUp() {
     <>
       <h1>Sign Up</h1>
       <form onSubmit={handleSubmit}>
-        {errorMsg && <p>{errorMsg}</p>}
+        {error && <p>{error}</p>}
         <Field
           name="email"
           type="email"
@@ -67,5 +56,16 @@ function SignUp() {
     </>
   );
 }
+
+const SignUpMutation = gql`
+  mutation SignUpMutation($email: String!, $password: String!) {
+    signUp(input: { email: $email, password: $password }) {
+      user {
+        id
+        email
+      }
+    }
+  }
+`;
 
 export default SignUp;
