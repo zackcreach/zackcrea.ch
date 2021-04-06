@@ -5,6 +5,8 @@ import merge from "deepmerge";
 
 let apolloClient;
 
+export const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
+
 function createIsomorphLink() {
   if (typeof window === "undefined") {
     const { SchemaLink } = require("@apollo/client/link/schema");
@@ -51,6 +53,14 @@ export function initializeApollo(initialState = null) {
   if (!apolloClient) apolloClient = _apolloClient;
 
   return _apolloClient;
+}
+
+export function addApolloState(client, pageProps) {
+  if (pageProps?.props) {
+    pageProps.props[APOLLO_STATE_PROP_NAME] = client.cache.extract();
+  }
+
+  return pageProps;
 }
 
 export function useApollo(initialState) {

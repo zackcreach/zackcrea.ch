@@ -16,7 +16,7 @@ import {
 import { Close } from "grommet-icons";
 import { getErrorMessage } from "../../lib/form";
 
-export default function GifForm() {
+export default function GifForm(props) {
   const defaultValue = {
     file: {},
     url: "",
@@ -29,11 +29,18 @@ export default function GifForm() {
 
   const [tagOptions, setTagOptions] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState({});
   const [value, setValue] = useState(defaultValue);
   const [isLoading, setIsLoading] = useState(false);
 
   const [addGif] = useMutation(AddGifMutation);
+
+  useEffect(() => {
+    if (isSubmitted === true) {
+      setTimeout(props.handleClickLayer, 2000);
+    }
+  }, [isSubmitted]);
 
   async function handleChangeFile(event) {
     setIsLoading(true);
@@ -75,6 +82,8 @@ export default function GifForm() {
           tags,
         },
       });
+
+      setIsSubmitted(true);
     } catch (error) {
       setError({ message: getErrorMessage(error) });
     } finally {
@@ -192,6 +201,12 @@ export default function GifForm() {
         {error.message && (
           <Box pad={{ bottom: "medium", top: "medium" }}>
             <Text color="status-error">{error.message}</Text>
+          </Box>
+        )}
+
+        {isSubmitted && (
+          <Box pad={{ bottom: "medium", top: "medium" }}>
+            <Text color="status-ok">Success!</Text>
           </Box>
         )}
 

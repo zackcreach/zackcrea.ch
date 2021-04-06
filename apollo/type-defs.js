@@ -42,6 +42,9 @@ export const typeDefs = gql`
     url: String!
     tags: [String]
   }
+  input RemoveGifInput {
+    id: String!
+  }
 
   type SignUpPayload {
     user: User!
@@ -55,12 +58,15 @@ export const typeDefs = gql`
   type AddGifPayload {
     gif: Gif!
   }
+  type RemoveGifPayload {
+    success: Boolean!
+  }
 
   type Query {
     user(id: ID!): User!
     users: [User]!
     viewer: User
-    gifs: [Gif]!
+    gifs: [Gif]
     gif(id: ID!): Gif!
   }
 
@@ -70,5 +76,6 @@ export const typeDefs = gql`
     signOut: Boolean!
     uploadFile(file: FileUpload!): File!
     addGif(input: AddGifInput!): AddGifPayload!
+    removeGif(input: RemoveGifInput!): RemoveGifPayload!
   }
 `;

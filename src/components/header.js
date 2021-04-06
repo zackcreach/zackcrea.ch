@@ -10,11 +10,7 @@ import { Grommet as GrommetIcon, Menu as MenuIcon } from "grommet-icons";
 export default function Header(props) {
   return (
     <GrommetHeader background="light-4" pad="medium" height="xsmall">
-      <Anchor
-        href="https://tools.grommet.io/"
-        icon={<GrommetIcon color="brand" />}
-        label="Grommet Tools"
-      />
+      <Anchor href="/" label="Gif Master 5000" />
 
       <ResponsiveContext.Consumer>
         {(size) =>
@@ -34,11 +30,8 @@ export default function Header(props) {
             </Box>
           ) : (
             <Box justify="end" direction="row" gap="medium">
-              <Anchor href="https://v2.grommet.io/" label="Grommet.io" />
-              <Anchor
-                href="https://github.com/grommet/grommet/issues"
-                label="Feedback"
-              />
+              <Anchor label="Upload New Gif" onClick={props.handleClickLayer} />
+              <Anchor label="Login" />
             </Box>
           )
         }
