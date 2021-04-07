@@ -2,15 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import Head from "next/head";
 import { gql, useMutation } from "@apollo/client";
 import { initializeApollo } from "../../apollo/client";
-import {
-  Layer,
-  Image,
-  Button,
-  Grid,
-  Box,
-  ResponsiveContext,
-  Text,
-} from "grommet";
+import { Layer, Image, Grid, Box, ResponsiveContext } from "grommet";
 import { Close } from "grommet-icons";
 
 import Header from "../components/header";
@@ -55,7 +47,6 @@ export default function Home(props) {
 
       <main>
         <Box pad="large">
-          {props.error && <Text color="status-error">{props.error}</Text>}
           <Grid columns={size !== "small" ? "small" : "100%"} gap="small">
             {props.gifs?.map((node) => (
               <Box key={node.id} style={{ position: "relative" }}>
@@ -116,7 +107,7 @@ const GifsQuery = gql`
   }
 `;
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const apolloClient = initializeApollo();
 
   try {
