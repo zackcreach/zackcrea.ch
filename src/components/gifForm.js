@@ -19,7 +19,6 @@ import { getErrorMessage } from "../../lib/form";
 export default function GifForm(props) {
   const defaultValue = {
     file: {},
-    url: "",
     name: "",
     tags: [],
   };
@@ -37,8 +36,8 @@ export default function GifForm(props) {
   const [addGif] = useMutation(AddGifMutation);
 
   useEffect(() => {
-    if (isSubmitted === true) {
-      setTimeout(props.handleClickLayer, 2000);
+    if (isSubmitted === true && error.message == null) {
+      props.refreshGifs();
     }
   }, [isSubmitted]);
 
@@ -50,16 +49,20 @@ export default function GifForm(props) {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/upload/image", {
+      const response = await fetch("/api/image/upload", {
         method: "POST",
         body: formData,
       });
 
       const { data } = await response.json();
 
-      const url = data.Location;
-      const name = value.name || data.Key.replace(/\.\w+/, "");
-      handleChange({ ...value, url, name });
+      const nextValue = {
+        ...value,
+        file: data,
+        name: value.name || data.filename.replace(/\.\w+/, ""),
+      };
+
+      handleChange(nextValue);
     } catch (error) {
       setError({ message: getErrorMessage(error) });
     } finally {
@@ -73,12 +76,12 @@ export default function GifForm(props) {
     setIsLoading(true);
 
     try {
-      const { name, url, tags } = event.value;
+      const { file, name, tags } = event.value;
 
       await addGif({
         variables: {
+          file,
           name,
-          url,
           tags,
         },
       });
@@ -135,8 +138,8 @@ export default function GifForm(props) {
         onChange={handleChange}
         onReset={handleReset}
       >
-        <Box pad={value.url && { bottom: "medium" }}>
-          <Image src={value.url} />
+        <Box pad={value.file?.url && { bottom: "medium" }}>
+          <Image src={value.file?.url} />
         </Box>
 
         <Box pad={{ bottom: "medium" }}>
@@ -221,12 +224,12 @@ export default function GifForm(props) {
 }
 
 const AddGifMutation = gql`
-  mutation AddGifMutation($name: String!, $url: String!, $tags: [String]) {
-    addGif(input: { name: $name, url: $url, tags: $tags }) {
+  mutation AddGifMutation($file: JSON!, $name: String!, $tags: [String]) {
+    addGif(input: { file: $file, name: $name, tags: $tags }) {
       gif {
         id
+        file
         name
-        url
         tags
         created_ts
         updated_ts

@@ -1,14 +1,16 @@
 import { AuthenticationError, UserInputError } from "apollo-server-micro";
 import { GraphQLUpload } from "graphql-upload";
+import GraphQLJSON from "graphql-type-json";
 import { createUser, findUser, validatePassword } from "../lib/user";
 import { getGifList, getGif, createGif, deleteGif } from "../lib/gifs";
 import { setLoginSession, getLoginSession } from "../lib/auth";
-import { uploadImage } from "../lib/file-uploader";
+import { uploadImage } from "../lib/file";
 import { removeTokenCookie } from "../lib/auth-cookies.js";
 import db from "../lib/database";
 
 export const resolvers = {
   FileUpload: GraphQLUpload,
+  JSON: GraphQLJSON,
   Query: {
     async viewer(_parent, _args, context, _info) {
       try {

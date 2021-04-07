@@ -1,6 +1,6 @@
 import multer from "multer";
 import nextConnect from "next-connect";
-import { uploadImage } from "../../../../lib/file-uploader";
+import { uploadImage } from "../../../../lib/file";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });

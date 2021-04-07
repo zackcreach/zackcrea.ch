@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 
 export const typeDefs = gql`
   scalar FileUpload
+  scalar JSON
 
   type User {
     id: ID!
@@ -17,8 +18,8 @@ export const typeDefs = gql`
   }
   type Gif {
     id: ID!
+    file: JSON!
     name: String!
-    url: String!
     tags: [String]
     created_ts: String!
     updated_ts: String!
@@ -38,8 +39,8 @@ export const typeDefs = gql`
     password: String!
   }
   input AddGifInput {
+    file: JSON!
     name: String!
-    url: String!
     tags: [String]
   }
   input RemoveGifInput {

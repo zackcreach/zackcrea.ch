@@ -1,43 +1,41 @@
 import { useState, useContext, useEffect } from "react";
 import Head from "next/head";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useLazyQuery } from "@apollo/client";
 import { initializeApollo } from "../../apollo/client";
-import { Layer, Image, Grid, Box, ResponsiveContext } from "grommet";
-import { Close } from "grommet-icons";
+import { Layer, Text, Grid, Box, ResponsiveContext } from "grommet";
+import { getErrorMessage } from "../../lib/form";
 
+import styles from "./gifs.module.css";
 import Header from "../components/header";
 import GifForm from "../components/gifForm";
-import { WindowsLegacy } from "grommet-icons";
+import GifCard from "../components/gifCard";
 
 export default function Home(props) {
+  const [refreshGifs, refreshGifsResponse] = useLazyQuery(GifsQuery, {
+    fetchPolicy: "network-only",
+  });
+
   const size = useContext(ResponsiveContext);
+  const [gifs, setGifs] = useState(props.gifs);
+  const [error, setError] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [removeGif] = useMutation(RemoveGifMutation);
+
+  useEffect(() => {
+    if (refreshGifsResponse.called === false) {
+      return;
+    }
+
+    if (refreshGifsResponse.error) {
+      setError({ message: getErrorMessage(refreshGifsResponse.error) });
+    } else if (refreshGifsResponse.data) {
+      const gifs = refreshGifsResponse.data?.gifs || [];
+
+      setGifs(gifs);
+    }
+  }, [refreshGifsResponse]);
 
   function handleClickLayer() {
     setIsModalOpen((prevState) => !prevState);
-  }
-
-  async function handleClickDelete(event) {
-    const id = event.target.id;
-
-    try {
-      const response = await removeGif({
-        variables: { id },
-      });
-
-      const success = response?.data?.removeGif?.success;
-
-      if (success === true) {
-        window.location.reload();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  if (!props.gifs) {
-    return null;
   }
 
   return (
@@ -50,30 +48,12 @@ export default function Home(props) {
       <Header handleClickLayer={handleClickLayer} />
 
       <main>
+        {error.message && <Text color="status-error">{error.message}</Text>}
+
         <Box pad="large">
           <Grid columns={size !== "small" ? "small" : "100%"} gap="small">
-            {props.gifs.map((node) => (
-              <Box key={node.id} style={{ position: "relative" }}>
-                <Close
-                  size="small"
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    zIndex: 1,
-                    cursor: "pointer",
-                  }}
-                  color="white"
-                  id={node.id}
-                  onClick={handleClickDelete}
-                />
-
-                <Image
-                  src={node.url}
-                  fit="cover"
-                  style={{ borderRadius: "5px" }}
-                />
-              </Box>
+            {gifs.map((gif) => (
+              <GifCard {...gif} refreshGifs={refreshGifs} key={gif.name} />
             ))}
           </Grid>
         </Box>
@@ -84,7 +64,10 @@ export default function Home(props) {
             onEsc={handleClickLayer}
             modal
           >
-            <GifForm handleClickLayer={handleClickLayer} />
+            <GifForm
+              handleClickLayer={handleClickLayer}
+              refreshGifs={refreshGifs}
+            />
           </Layer>
         )}
       </main>
@@ -92,20 +75,12 @@ export default function Home(props) {
   );
 }
 
-const RemoveGifMutation = gql`
-  mutation RemoveGifMutation($id: String!) {
-    removeGif(input: { id: $id }) {
-      success
-    }
-  }
-`;
-
 const GifsQuery = gql`
   query GifsQuery {
     gifs {
       id
+      file
       name
-      url
       tags
     }
   }
@@ -113,6 +88,7 @@ const GifsQuery = gql`
 
 export async function getServerSideProps() {
   const apolloClient = initializeApollo();
+
   const props = { gifs: [] };
 
   try {
