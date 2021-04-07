@@ -36,6 +36,10 @@ export default function Home(props) {
     }
   }
 
+  if (!props.gifs) {
+    return null;
+  }
+
   return (
     <>
       <Head>
@@ -48,7 +52,7 @@ export default function Home(props) {
       <main>
         <Box pad="large">
           <Grid columns={size !== "small" ? "small" : "100%"} gap="small">
-            {props.gifs?.map((node) => (
+            {props.gifs.map((node) => (
               <Box key={node.id} style={{ position: "relative" }}>
                 <Close
                   size="small"
@@ -109,25 +113,19 @@ const GifsQuery = gql`
 
 export async function getServerSideProps() {
   const apolloClient = initializeApollo();
+  const props = { gifs: [] };
 
   try {
     const response = await apolloClient.query({
       query: GifsQuery,
     });
 
-    const gifs = response?.data?.gifs || [];
-
-    return {
-      props: {
-        gifs,
-      },
-    };
+    props.gifs = response?.data?.gifs || [];
   } catch (error) {
+    props.error = JSON.stringify(error);
+  } finally {
     return {
-      props: {
-        gifs: [],
-        error: JSON.stringify(error),
-      },
+      props,
     };
   }
 }
