@@ -4,13 +4,16 @@ import {
   Box,
   ResponsiveContext,
   Menu,
+  Image,
 } from "grommet";
 import { Grommet as GrommetIcon, Menu as MenuIcon } from "grommet-icons";
 
 export default function Header(props) {
   return (
-    <GrommetHeader background="light-4" pad="medium" height="xsmall">
-      <Anchor href="/" label="Gif Master 5000" />
+    <GrommetHeader background="light-4" pad="large" height="xsmall">
+      <Anchor href="/">
+        <Image src="https://gif-master.s3.amazonaws.com/logo.gif" width={300} />
+      </Anchor>
 
       <ResponsiveContext.Consumer>
         {(size) =>

@@ -2,7 +2,7 @@ import { AuthenticationError, UserInputError } from "apollo-server-micro";
 import { GraphQLUpload } from "graphql-upload";
 import GraphQLJSON from "graphql-type-json";
 import { createUser, findUser, validatePassword } from "../lib/user";
-import { getGifList, getGif, createGif, deleteGif } from "../lib/gifs";
+import { getGifList, getGif, createGif, editGif, deleteGif } from "../lib/gifs";
 import { setLoginSession, getLoginSession } from "../lib/auth";
 import { uploadImage } from "../lib/file";
 import { removeTokenCookie } from "../lib/auth-cookies.js";
@@ -77,6 +77,10 @@ export const resolvers = {
     },
     async addGif(_parent, args, _context, _info) {
       const gif = await createGif(args.input, db);
+      return { gif };
+    },
+    async editGif(_parent, args, _context, _info) {
+      const gif = await editGif(args.input, db);
       return { gif };
     },
     async removeGif(_parent, args, _context, _info) {

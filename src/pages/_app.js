@@ -7,7 +7,8 @@ import "../styles/base/globals.css";
 const theme = {
   global: {
     colors: {
-      brand: "#333",
+      brand: "#0F00CD",
+      focus: "#13D2F2",
     },
     font: {
       family: "Roboto",

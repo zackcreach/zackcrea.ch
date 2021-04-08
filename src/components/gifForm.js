@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
+import { getErrorMessage } from "../../lib/form";
 import {
   Heading,
   Box,
@@ -8,32 +9,30 @@ import {
   FormField,
   TextInput,
   Form,
-  Select,
   Spinner,
   Image,
   Text,
 } from "grommet";
-import { Close } from "grommet-icons";
-import { getErrorMessage } from "../../lib/form";
+
+import GifTags from "./gifTags";
 
 export default function GifForm(props) {
   const defaultValue = {
-    file: {},
-    name: "",
-    tags: [],
+    id: props.item?.id || null,
+    file: props.item?.file || {},
+    name: props.item?.name || "",
+    tags: props.item?.tags || [],
   };
 
-  const defaultOptions = [];
-  const newTagPrefix = "Create new tag";
-
-  const [tagOptions, setTagOptions] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
+  const [localImageUrl, setLocalImageUrl] = useState(defaultValue.file?.url);
+  const [upload, setUpload] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState({});
   const [value, setValue] = useState(defaultValue);
   const [isLoading, setIsLoading] = useState(false);
 
   const [addGif] = useMutation(AddGifMutation);
+  const [editGif] = useMutation(EditGifMutation);
 
   useEffect(() => {
     if (isSubmitted === true && error.message == null) {
@@ -42,55 +41,71 @@ export default function GifForm(props) {
   }, [isSubmitted]);
 
   async function handleChangeFile(event) {
-    setIsLoading(true);
+    const upload = event.target.files[0];
+    setUpload(upload);
 
-    try {
-      const file = event.target.files[0];
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/image/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const { data } = await response.json();
-
-      const nextValue = {
+    const reader = new FileReader();
+    reader.readAsDataURL(upload);
+    reader.onload = (event) => {
+      setLocalImageUrl(event.target.result);
+      handleChange({
         ...value,
-        file: data,
-        name: value.name || data.filename.replace(/\.\w+/, ""),
-      };
-
-      handleChange(nextValue);
-    } catch (error) {
-      setError({ message: getErrorMessage(error) });
-    } finally {
-      setIsLoading(false);
-    }
+        name: value.name || upload.name.replace(/\.\w+/, ""),
+      });
+    };
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
+    console.log(event.value);
+    console.log(value);
 
     setIsLoading(true);
 
     try {
-      const { file, name, tags } = event.value;
+      const formData = new FormData();
+      formData.append("file", upload);
 
-      await addGif({
-        variables: {
-          file,
-          name,
-          tags,
-        },
-      });
+      let imageData = defaultValue.file;
 
-      setIsSubmitted(true);
+      // Upload image
+      if (upload != null) {
+        const response = await fetch("/api/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const { data } = await response.json();
+        imageData = data;
+      }
+
+      if (defaultValue.id != null) {
+        // Edit record
+        console.log(imageData);
+
+        await editGif({
+          variables: {
+            file: imageData || {},
+            name: value.name,
+            tags: value.tags,
+            id: value.id,
+          },
+        });
+      } else {
+        // Add new record to db
+        await addGif({
+          variables: {
+            file: imageData || {},
+            name: value.name,
+            tags: value.tags,
+          },
+        });
+      }
     } catch (error) {
       setError({ message: getErrorMessage(error) });
     } finally {
       setIsLoading(false);
+      setIsSubmitted(true);
     }
   }
 
@@ -100,29 +115,6 @@ export default function GifForm(props) {
 
   function handleChange(nextValue) {
     setValue(nextValue);
-  }
-
-  function handleClickRemoveTag(event) {
-    const name = event.currentTarget.name;
-    const tags = value.tags.filter((tag) => tag !== name);
-    const nextValue = { ...value, tags };
-    handleChange(nextValue);
-  }
-
-  function handleChangeSelectTag(event) {
-    const option = event.option;
-    let tags = [];
-
-    if (option.includes(newTagPrefix)) {
-      defaultOptions.pop();
-      defaultOptions.push(searchValue);
-      tags = [...value.tags, searchValue];
-    } else {
-      tags = [...value.tags, option];
-    }
-
-    const nextValue = { ...value, tags };
-    handleChange(nextValue);
   }
 
   return (
@@ -138,12 +130,14 @@ export default function GifForm(props) {
         onChange={handleChange}
         onReset={handleReset}
       >
-        <Box pad={value.file?.url && { bottom: "medium" }}>
-          <Image src={value.file?.url} />
+        <Box pad={localImageUrl && { bottom: "medium" }}>
+          <Image src={localImageUrl} />
         </Box>
 
         <Box pad={{ bottom: "medium" }}>
           <FileInput
+            accept=".gif"
+            required={!props.item?.id}
             onChange={handleChangeFile}
             disabled={isLoading}
             renderFile={(file) => (
@@ -156,48 +150,12 @@ export default function GifForm(props) {
         </Box>
 
         <FormField name="name" htmlFor="name-input-id" label="Name">
-          <TextInput htmlFor="name-input-id" name="name" />
+          <TextInput htmlFor="name-input-id" name="name" required />
         </FormField>
 
-        <Box pad={{ bottom: "small" }}>
+        <Box pad={{ bottom: "large" }}>
           <FormField name="tags" htmlFor="tags-input-id" label="Tags">
-            <Box
-              direction="row"
-              pad={
-                value.tags?.length ? { bottom: "xsmall", top: "xsmall" } : {}
-              }
-              wrap
-            >
-              {value.tags?.map((tag) => (
-                <Box pad={{ right: "xsmall", bottom: "xsmall" }}>
-                  <Button
-                    size="small"
-                    name={tag}
-                    type="button"
-                    label={tag}
-                    icon={<Close size="small" />}
-                    onClick={handleClickRemoveTag}
-                    reverse
-                  />
-                </Box>
-              ))}
-            </Box>
-
-            <Select
-              name="tags"
-              id="tags-input-id"
-              options={tagOptions}
-              onChange={handleChangeSelectTag}
-              onClose={() => setTagOptions(defaultOptions)}
-              onSearch={(text) => {
-                _updateCreateOption(text, defaultOptions, newTagPrefix);
-                const regex = _getRegExp(text);
-                setTagOptions(
-                  defaultOptions.filter((option) => regex.test(option))
-                );
-                setSearchValue(text);
-              }}
-            />
+            <GifTags defaultValue={defaultValue} />
           </FormField>
         </Box>
 
@@ -223,6 +181,17 @@ export default function GifForm(props) {
   );
 }
 
+const GetGifQuery = gql`
+  query GifsQuery($id: ID!) {
+    gifs(input: { id: $id }) {
+      id
+      file
+      name
+      tags
+    }
+  }
+`;
+
 const AddGifMutation = gql`
   mutation AddGifMutation($file: JSON!, $name: String!, $tags: [String]) {
     addGif(input: { file: $file, name: $name, tags: $tags }) {
@@ -238,15 +207,22 @@ const AddGifMutation = gql`
   }
 `;
 
-function _updateCreateOption(text, defaultOptions, prefix) {
-  const length = defaultOptions.length;
-  if ((defaultOptions[length - 1] || "").includes(prefix)) {
-    defaultOptions.pop();
+const EditGifMutation = gql`
+  mutation EditGifMutation(
+    $file: JSON!
+    $name: String!
+    $tags: [String]
+    $id: ID!
+  ) {
+    editGif(input: { file: $file, name: $name, tags: $tags, id: $id }) {
+      gif {
+        id
+        file
+        name
+        tags
+        created_ts
+        updated_ts
+      }
+    }
   }
-  defaultOptions.push(`${prefix} '${text}'`);
-}
-
-function _getRegExp(text) {
-  const escapedText = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-  return new RegExp(escapedText, "i");
-}
+`;

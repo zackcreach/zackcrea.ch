@@ -1,11 +1,10 @@
 import { useState, useContext, useEffect } from "react";
 import Head from "next/head";
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { initializeApollo } from "../../apollo/client";
 import { Layer, Text, Grid, Box, ResponsiveContext } from "grommet";
 import { getErrorMessage } from "../../lib/form";
 
-import styles from "./gifs.module.css";
 import Header from "../components/header";
 import GifForm from "../components/gifForm";
 import GifCard from "../components/gifCard";
@@ -15,7 +14,10 @@ export default function Home(props) {
     fetchPolicy: "network-only",
   });
 
+  const [removeGif] = useMutation(RemoveGifMutation);
+
   const size = useContext(ResponsiveContext);
+  const [item, setItem] = useState(null);
   const [gifs, setGifs] = useState(props.gifs);
   const [error, setError] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,8 +36,42 @@ export default function Home(props) {
     }
   }, [refreshGifsResponse]);
 
+  useEffect(() => {
+    if (item != null) {
+      handleClickLayer();
+    }
+  }, [item]);
+
+  useEffect(() => {
+    if (isModalOpen === false) {
+      setItem(null);
+    }
+  }, [isModalOpen]);
+
   function handleClickLayer() {
     setIsModalOpen((prevState) => !prevState);
+  }
+
+  async function handleClickDelete(event) {
+    const id = event.target.id;
+    const filename = event.target.dataset?.filename;
+
+    try {
+      // Remove image from file storage
+      await fetch(`/api/image/delete?filename=${filename}`, { method: "POST" });
+
+      // Delete record from db
+      const response = await removeGif({
+        variables: { id },
+      });
+
+      const success = response?.data?.removeGif?.success;
+      if (success === true) {
+        refreshGifs();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -50,10 +86,15 @@ export default function Home(props) {
       <main>
         {error.message && <Text color="status-error">{error.message}</Text>}
 
-        <Box pad="large">
+        <Box pad="large" background="light-2">
           <Grid columns={size !== "small" ? "small" : "100%"} gap="small">
             {gifs.map((gif) => (
-              <GifCard {...gif} refreshGifs={refreshGifs} key={gif.name} />
+              <GifCard
+                key={gif.name}
+                handleClickDelete={handleClickDelete}
+                setItem={setItem}
+                {...gif}
+              />
             ))}
           </Grid>
         </Box>
@@ -67,6 +108,7 @@ export default function Home(props) {
             <GifForm
               handleClickLayer={handleClickLayer}
               refreshGifs={refreshGifs}
+              item={item}
             />
           </Layer>
         )}
@@ -82,6 +124,14 @@ const GifsQuery = gql`
       file
       name
       tags
+    }
+  }
+`;
+
+const RemoveGifMutation = gql`
+  mutation RemoveGifMutation($id: String!) {
+    removeGif(input: { id: $id }) {
+      success
     }
   }
 `;

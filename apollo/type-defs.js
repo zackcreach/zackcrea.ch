@@ -43,6 +43,12 @@ export const typeDefs = gql`
     name: String!
     tags: [String]
   }
+  input EditGifInput {
+    id: ID!
+    file: JSON!
+    name: String!
+    tags: [String]
+  }
   input RemoveGifInput {
     id: String!
   }
@@ -57,6 +63,9 @@ export const typeDefs = gql`
     file: File!
   }
   type AddGifPayload {
+    gif: Gif!
+  }
+  type EditGifPayload {
     gif: Gif!
   }
   type RemoveGifPayload {
@@ -77,6 +86,7 @@ export const typeDefs = gql`
     signOut: Boolean!
     uploadFile(file: FileUpload!): File!
     addGif(input: AddGifInput!): AddGifPayload!
+    editGif(input: EditGifInput!): EditGifPayload!
     removeGif(input: RemoveGifInput!): RemoveGifPayload!
   }
 `;
