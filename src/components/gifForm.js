@@ -57,8 +57,6 @@ export default function GifForm(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log(event.value);
-    console.log(value);
 
     setIsLoading(true);
 
@@ -79,27 +77,17 @@ export default function GifForm(props) {
         imageData = data;
       }
 
-      if (defaultValue.id != null) {
-        // Edit record
-        console.log(imageData);
+      const variables = {
+        file: imageData || {},
+        name: value.name,
+        tags: value.tags,
+      };
 
-        await editGif({
-          variables: {
-            file: imageData || {},
-            name: value.name,
-            tags: value.tags,
-            id: value.id,
-          },
-        });
+      if (defaultValue.id != null) {
+        await editGif({ variables });
       } else {
-        // Add new record to db
-        await addGif({
-          variables: {
-            file: imageData || {},
-            name: value.name,
-            tags: value.tags,
-          },
-        });
+        variables.id = value.id;
+        await addGif({ variables });
       }
     } catch (error) {
       setError({ message: getErrorMessage(error) });
@@ -180,17 +168,6 @@ export default function GifForm(props) {
     </Box>
   );
 }
-
-const GetGifQuery = gql`
-  query GifsQuery($id: ID!) {
-    gifs(input: { id: $id }) {
-      id
-      file
-      name
-      tags
-    }
-  }
-`;
 
 const AddGifMutation = gql`
   mutation AddGifMutation($file: JSON!, $name: String!, $tags: [String]) {
