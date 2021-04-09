@@ -27,11 +27,8 @@ export default function Home() {
           </h2>
 
           <h2>
-            <a
-              href="https://www.flickr.com/photos/zackcreach"
-              className={styles.link}
-            >
-              I shoot film.
+            <a href="https://www.gifmaster5000.com" className={styles.link}>
+              I love gifs.
             </a>
           </h2>
         </div>
