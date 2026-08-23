@@ -1,0 +1,80 @@
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  src: local("Roboto Light"), local("Roboto-Light"),
+    url("https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmSU5fBBc4AMP6lQ.woff2") format("woff2");
+}
+
+* {
+  box-sizing: border-box;
+  border: 0 solid #e5e7eb;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+h1,
+h2 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+h1 {
+  padding-bottom: 1rem;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+h2 {
+  padding-bottom: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+main {
+  max-width: 764px;
+  margin: 2rem auto 0;
+}
+
+.home {
+  padding: 2.5rem;
+  color: white;
+  background-color: black;
+}
+
+a,
+a:visited {
+  position: relative;
+  display: inline-block;
+  color: white;
+  text-decoration: none;
+}
+
+a::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  content: "";
+  background: white;
+  transition: width 0.5s ease-in-out;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
